@@ -98,7 +98,7 @@ workflow POCRNASEQ {
         file(params.fasta),
         file(params.transcript_fasta)
     )
-    ch_versions = ch_versions.mix(SALMON_INDEX.out.versions.first())
+    ch_versions = ch_versions.mix(SALMON_INDEX.out.versions)
 
     //
     // MODULE: Run Salmon quant
@@ -111,7 +111,7 @@ workflow POCRNASEQ {
         false,
         ""
     )
-    ch_versions = ch_versions.mix(SALMON_QUANT.out.versions.first())
+    ch_versions = ch_versions.mix(SALMON_QUANT.out.versions)
 
     //
     // MODULE: Run custom software versions

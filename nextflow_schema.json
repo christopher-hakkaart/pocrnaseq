@@ -64,6 +64,21 @@
                     "help_text": "This parameter is *mandatory* if `--genome` is not specified. If you don't have a BWA index available this will be generated for you automatically. Combine with `--save_reference` to save BWA index for future runs.",
                     "fa_icon": "far fa-file-code"
                 },
+                "transcript_fasta": {
+                    "type": "string",
+                    "description": "Path to transcript fasta.",
+                    "fa_icon": "far fa-file"
+                },
+                "gff": {
+                    "type": "string",
+                    "description": "Path to gff.",
+                    "fa_icon": "far fa-file"
+                },
+                "gtf": {
+                    "type": "string",
+                    "description": "Path to gtf.",
+                    "fa_icon": "far fa-file"
+                },
                 "igenomes_ignore": {
                     "type": "boolean",
                     "description": "Do not load the iGenomes reference config.",
