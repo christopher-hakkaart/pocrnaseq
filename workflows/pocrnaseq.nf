@@ -46,7 +46,10 @@ include { INPUT_CHECK } from '../subworkflows/local/input_check'
 //
 // MODULE: Installed directly from nf-core/modules
 //
+include { GUNZIP                      } from '../modules/nf-core/gunzip/main'
 include { FASTQC                      } from '../modules/nf-core/fastqc/main'
+include { SALMON_INDEX                } from '../modules/nf-core/salmon/index/main'
+include { SALMON_QUANT                } from '../modules/nf-core/salmon/quant/main'
 include { MULTIQC                     } from '../modules/nf-core/multiqc/main'
 include { CUSTOM_DUMPSOFTWAREVERSIONS } from '../modules/nf-core/custom/dumpsoftwareversions/main'
 
@@ -82,6 +85,37 @@ workflow POCRNASEQ {
     )
     ch_versions = ch_versions.mix(FASTQC.out.versions.first())
 
+    //
+    // MODULE: Run gunzip
+    //
+    ch_gtf      = GUNZIP ( [ [:], file(params.gtf) ] ).gunzip.map { it[1] }
+    ch_versions = ch_versions.mix(GUNZIP.out.versions)
+
+    //
+    // MODULE: Run Salmon index
+    //
+    SALMON_INDEX (
+        file(params.fasta),
+        file(params.transcript_fasta)
+    )
+    ch_versions = ch_versions.mix(SALMON_INDEX.out.versions)
+
+    //
+    // MODULE: Run Salmon quant
+    //
+    SALMON_QUANT (
+        INPUT_CHECK.out.reads,
+        SALMON_INDEX.out.index,
+        ch_gtf,
+        file(params.transcript_fasta),
+        false,
+        ""
+    )
+    ch_versions = ch_versions.mix(SALMON_QUANT.out.versions)
+
+    //
+    // MODULE: Run custom software versions
+    //
     CUSTOM_DUMPSOFTWAREVERSIONS (
         ch_versions.unique().collectFile(name: 'collated_versions.yml')
     )
